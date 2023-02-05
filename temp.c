@@ -39,14 +39,18 @@ int main(void)
 
     while(value!=6)
         {
+        printf("\n%d %d\n", pices[0][0], pices[0][1]);
         display(gr_ptr,bl_ptr,re_ptr,ye_ptr);
         printf("Enter value: ");
         scanf("%d", &value);
         }
+    
+    value=0;
+    kingdom_finder(value, ptr_pices,1,gr_ptr, re_ptr, bl_ptr, ye_ptr);
 
         value=0;
 
-    while(green_area[0][1]!='*')
+    while(*(gr_ptr+1)!='*')
     {
         display(gr_ptr,bl_ptr,re_ptr,ye_ptr);
         printf("\n%d %d\n", pices[0][0], pices[0][1]);
@@ -55,6 +59,8 @@ int main(void)
 
         kingdom_finder(value, ptr_pices,1,gr_ptr, re_ptr, bl_ptr, ye_ptr);
     }
+
+    kingdom_finder(value, ptr_pices,1,gr_ptr, re_ptr, bl_ptr, ye_ptr);
 }
 
 void kingdom_finder(int value, int *initial_kingdom,int color,char *g, char *r, char *b, char *y)
@@ -86,17 +92,19 @@ void area_g(int value,int *initial, int color,char *g, char *r, char *b, char *y
 {
     int temp=*(initial+1);
     *(initial+1)+=value;
-    if(*(initial+1)>13)
+    if(*(initial+1)>18)
     {
-        value=*(initial+1)-13;
-        *(initial+1)=value;
-        value=0;
+        *(g+(18-temp)*3)='_';//clearing past record
+
+        value=*(initial+1)-18; //finding the coordinates to move in next kingdom
+        *(initial+1)=value; //assigning the coords of the next kingdom
+        value=0; //as coordinates are already assigned, putting value = 0
         *(initial)+=1;
         area_r(value, initial, color,r,b,y,g);
         //to move to next kingdom
     }
 
-    if(*(initial+1)<=6) //moving pice to new location
+    if(*(initial+1)<=6 && *(initial)==1) //moving pice to new location
     {   
         *(g+2+3*(*(initial+1)-1))='*';
     }
@@ -106,18 +114,24 @@ void area_g(int value,int *initial, int color,char *g, char *r, char *b, char *y
         *(g+1+3*5)='*';
     }
 
-    else if(*(initial+1)>7&&color==1&&*(initial+1)<=12 && temp<8)
+    else if(color==1 && *(initial+1)<13)
     {
-        *(g+1+(12-*(initial+1))*3)='*';
+        *(g+(12-*(initial+1))*3+1)='*';
     }
 
     else
     {
-        *(g+(13-*(initial+1))*3)='*';
+        if(*(initial+1)>7 && *(initial+1)<13)
+        {
+        *(initial+1)+=5;
+        }
+
+        *(g+(18-*(initial+1))*3)='*';
     }
 
-    //clearing previous location    
-
+    if(value!=0)
+    {
+    //clearing previous location
     if(temp<=6) //moving pice to new location
     {   
         *(g+2+3*(temp-1))='_';
@@ -128,14 +142,20 @@ void area_g(int value,int *initial, int color,char *g, char *r, char *b, char *y
         *(g+1+3*5)='_';
     }
 
-    else if(temp>7&&color==1&&temp<=12 && *(initial+1)<9)
+    else if(color==1 && temp<13)
     {
-        *(g+1+(12-temp)*3)='_';
+        *(g+(12-temp)*3+1)='_';
     }
 
     else
     {
-        *(g+(13-temp)*3)='_';
+        if(temp>7 && temp<13)
+        {
+        temp+=5;
+        }
+        
+        *(g+(18-temp)*3)='_';
+    }
     }
 }
 
@@ -145,6 +165,8 @@ void area_r(int value,int *initial, int color, char*r, char *b, char *y, char *g
     *(initial+1)+=value;
     if(*(initial+1)>13)
     {
+        *(r+(temp-8))='*';//clearing past record
+
         value=13-*(initial+1);
         *(initial+1)=0;
         *(initial)++;
@@ -152,7 +174,8 @@ void area_r(int value,int *initial, int color, char*r, char *b, char *y, char *g
         //to move to next kingdom
     }
 
-    if(*(initial+1)<=6) //moving pice to new location
+    //moving pice to new location
+    if(*(initial+1)<=6 && *(initial)==2)  //if it is in the same kingdom
     {   
         *(r+18-*(initial+1))='*';
     }
@@ -172,9 +195,11 @@ void area_r(int value,int *initial, int color, char*r, char *b, char *y, char *g
         *(r+(*(initial+1)-8))='*';
     }
 
-    //clearing previous location    
+    //clearing previous location
 
-    if(temp<=6 && *(initial+1)!=1)
+    if(value!=0)
+    {
+    if(temp<=6)
     {   
         *(r+18-temp)='_';
     }
@@ -192,6 +217,7 @@ void area_r(int value,int *initial, int color, char*r, char *b, char *y, char *g
     else
     {
         *(r+temp-8)='_';
+    }
     }
 }
 
