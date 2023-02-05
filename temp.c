@@ -31,9 +31,9 @@ int main(void)
     ptr_pices=&pices[0][0];
     int value=0;
 
-    *(ptr_pices)=1;
+    *(ptr_pices)=2;
 
-    *(ptr_pices+1)=1;
+    *(ptr_pices+1)=13;
 
     printf("%d %d", pices[0][0], pices[0][1]);
 
@@ -46,7 +46,7 @@ int main(void)
         }
     
     value=0;
-    kingdom_finder(value, ptr_pices,1,gr_ptr, re_ptr, bl_ptr, ye_ptr);
+    kingdom_finder(value, ptr_pices,2,gr_ptr, re_ptr, bl_ptr, ye_ptr);
 
         value=0;
 
@@ -57,10 +57,10 @@ int main(void)
         printf("Enter value: ");
         scanf("%d", &value);
 
-        kingdom_finder(value, ptr_pices,1,gr_ptr, re_ptr, bl_ptr, ye_ptr);
+        kingdom_finder(value, ptr_pices,2,gr_ptr, re_ptr, bl_ptr, ye_ptr);
     }
 
-    kingdom_finder(value, ptr_pices,1,gr_ptr, re_ptr, bl_ptr, ye_ptr);
+    kingdom_finder(value, ptr_pices,2,gr_ptr, re_ptr, bl_ptr, ye_ptr);
 }
 
 void kingdom_finder(int value, int *initial_kingdom,int color,char *g, char *r, char *b, char *y)
@@ -68,7 +68,6 @@ void kingdom_finder(int value, int *initial_kingdom,int color,char *g, char *r, 
     switch(*(initial_kingdom))
     {
         case 1:
-        printf("kingdom identified\n");
         area_g(value, initial_kingdom,color, g,r,b,y);
         
         break;
@@ -99,7 +98,7 @@ void area_g(int value,int *initial, int color,char *g, char *r, char *b, char *y
         value=*(initial+1)-18; //finding the coordinates to move in next kingdom
         *(initial+1)=value; //assigning the coords of the next kingdom
         value=0; //as coordinates are already assigned, putting value = 0
-        *(initial)+=1;
+        *(initial)++;
         area_r(value, initial, color,r,b,y,g);
         //to move to next kingdom
     }
@@ -163,12 +162,14 @@ void area_r(int value,int *initial, int color, char*r, char *b, char *y, char *g
 {
     int temp=*(initial+1);
     *(initial+1)+=value;
-    if(*(initial+1)>13)
-    {
-        *(r+(temp-8))='*';//clearing past record
 
-        value=13-*(initial+1);
-        *(initial+1)=0;
+    if(*(initial+1)>18)
+    {
+        *(r+(temp-13))='_';//clearing past record
+
+        value=*(initial+1)-18;
+        *(initial+1)=value;
+        value=0;
         *(initial)++;
         area_b(value, initial, color, b,y,g,r);
         //to move to next kingdom
@@ -185,14 +186,18 @@ void area_r(int value,int *initial, int color, char*r, char *b, char *y, char *g
         *(r+6)='*';
     }
 
-    else if(*(initial+1)>7&&color==2&&*(initial+1)<=12)
+    else if(color==2 && *(initial+1)<13)
     {
         *(r+*(initial+1)-1)='*';
     }
 
     else
     {
-        *(r+(*(initial+1)-8))='*';
+        if(*(initial+1)>7 && *(initial+1)<13)
+        {
+            *(initial+1)+=5;
+        }
+        *(r+(*(initial+1)-13))='*';
     }
 
     //clearing previous location
@@ -209,14 +214,18 @@ void area_r(int value,int *initial, int color, char*r, char *b, char *y, char *g
         *(r+6)='_';
     }
 
-    else if(temp>7&&color==2&&temp<=12) //for home pices (red pices for red kingdom)
+    else if(color==2 && *(initial+1)<13)
     {
         *(r+temp-1)='_';
     }
 
     else
     {
-        *(r+temp-8)='_';
+        if(temp>7 && temp<13)
+        {
+            temp+=5;
+        }
+        *(r+temp-13)='_';
     }
     }
 }
@@ -225,18 +234,20 @@ void area_b(int value,int *initial, int color, char *b, char *y, char *g, char *
 {
     int temp=*(initial+1);
     *(initial+1)+=value;
-    if(*(initial+1)>13)
+
+    if(*(initial+1)>18)
     {
-        value=13-*(initial+1);
-        *(initial+1)=0;
+        *(b+3*temp-37)='_';//clearing past record
+
+        value=*(initial+1)-18;
+        *(initial+1)=value;
+        value=0;
         *(initial)++;
         area_y(value, initial, color, y, g, r, b);
         //to move to next kingdom
     }
 
-    *(initial+1)+=value;
-
-    if(*(initial+1)<=6) //moving pice to new location
+    if(*(initial+1)<=6 && *(initial)==3) //moving pice to new location
     {   
         *(b+18-(3*(*(initial+1))))='*';
     }
@@ -246,13 +257,17 @@ void area_b(int value,int *initial, int color, char *b, char *y, char *g, char *
         *(b+1)='*';
     }
 
-    else if(*(initial+1)>7&&color==3&&*(initial+1)<=12)
+    else if(color==3 && *(initial+1)<13)
     {
         *(b+1+(*(initial+1)-7)*3)='*';
     }
 
     else
     {
+        if(*(initial+1)>7 && *(initial+1)<13)
+        {
+        *(initial+1)+=5;
+        }
         *(b+((*(initial+1)-7)*3)-1)='*';
     }
 
