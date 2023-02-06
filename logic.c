@@ -4,16 +4,14 @@
 
 int i,j;
 void display(char*,char*,char*,char*); //for displaying (giving input the four char arrays)
-int dice(void); //dice
+
 void kingdom_finder(int,int *,int,char*,char*,char*, char*); //valur, initial kingdomn(kingdom number and postion)
 void area_g(int,int*,int,char *, char *,char *, char *); //navigation function in green kingdom
-void area_r(int,int *,int, char *, char *,char *, char *);
-void area_b(int,int *,int, char *, char *,char *, char *);
-void area_y(int,int *,int, char *, char *,char *, char *);
+void area_r(int,int *,int, char *, char *,char *, char *); //navigation function in red kingdom
+void area_b(int,int *,int, char *, char *,char *, char *); //navigation function in blue kingdom
+void area_y(int,int *,int, char *, char *,char *, char *); //navigation function in yellow kingdom
 
-    char green_area[6][3],blue_area[6][3],red_area[3][6], yellow_area[3][6];
-    char *gr_ptr, *bl_ptr, *re_ptr, *ye_ptr;
-    gr_ptr=&green_area[0][0];bl_ptr=&blue_area[0][0];re_ptr=&red_area[0][0];ye_ptr=&yellow_area[0][0];
+int dice(void); //dice
 
 int main(void)
 {
@@ -23,32 +21,37 @@ int main(void)
 
     for(i=0;i<18;i++)
     {
-        *(gr_ptr+i)=*(bl_ptr+i)=*(re_ptr+i)=*(ye_ptr+i)='_';
+        *(gr_ptr+i)=*(bl_ptr+i)=*(re_ptr+i)=*(ye_ptr+i)='_';//assigning the blank spaces.
     }
+
+
     int pices[1][2]; //coords of pices (kingdom/coord)
+    int *ptr_pices; //for storing posititon of pices (kingdom,location)
+    ptr_pices=&pices[0][0]; //liking pointer
 
     //1-green
     //2-red
     //3-blue
     //4-yellow
-    int *ptr_pices; //for storing posititon of pices (kingdom,location)
-    ptr_pices=&pices[0][0];
+    
     int value=0;
 
     *(ptr_pices)=1;
-
-    *(ptr_pices+1)=1;
+    *(ptr_pices+1)=14;
 
     printf("%d %d", pices[0][0], pices[0][1]);
 
     while(value!=6)
         {
+        printf("\n%d %d\n", pices[0][0], pices[0][1]);
         display(gr_ptr,bl_ptr,re_ptr,ye_ptr);
         printf("Enter value: ");
         scanf("%d", &value);
         }
 
         value=0;
+
+        kingdom_finder(value, ptr_pices,3,gr_ptr, re_ptr, bl_ptr, ye_ptr);
 
     while(green_area[0][1]!='*')
     {
@@ -59,6 +62,8 @@ int main(void)
 
         kingdom_finder(value, ptr_pices,1,gr_ptr, re_ptr, bl_ptr, ye_ptr);
     }
+
+    display(gr_ptr,bl_ptr,re_ptr,ye_ptr);
 }
 
 void kingdom_finder(int value, int *initial_kingdom,int color,char *g, char *r, char *b, char *y)
@@ -66,7 +71,6 @@ void kingdom_finder(int value, int *initial_kingdom,int color,char *g, char *r, 
     switch(*(initial_kingdom))
     {
         case 1:
-        printf("kingdom identified\n");
         area_g(value, initial_kingdom,color, g,r,b,y);
         
         break;
@@ -86,219 +90,317 @@ void kingdom_finder(int value, int *initial_kingdom,int color,char *g, char *r, 
 
 }
 
-
-}
-
-void area_g(int value,int *initial,int color)
+void area_g(int value,int *initial, int color,char *g, char *r, char *b, char *y)
 {
     int temp=*(initial+1);
-    if(value+*(initial+1)>13)
-    {
-        *(initial)++; //to move to next kingdom
-    }
-
     *(initial+1)+=value;
 
-    if(*(initial+1)<=6) //moving pice to new location
+    if(*(initial+1)>18)
+    {
+        *(g+(18-temp)*3)='_';//clearing past record
+
+        value=*(initial+1)-18; //finding the coordinates to move in next kingdom
+        *(initial+1)=value; //assigning the coords of the next kingdom
+        value=0; //as coordinates are already assigned, putting value = 0
+        *(initial)+=1;
+        area_r(value, initial, color,r,b,y,g);
+        return(0);
+        //to move to next kingdom
+    }
+
+    if(*(initial+1)<=6 && *(initial)==1) //moving pice to new location
     {   
-        *(gr_ptr+2+3*(*(initial+1)-1))='*';
+        *(g+2+3*(*(initial+1)-1))='*';
     }
 
     else if(*(initial+1)==7)
     {
-        *(gr_ptr+1+3*5)='*';
+        *(g+1+3*5)='*';
     }
 
-    else if(*(initial+1)>7&&color==1&&*(initial+1)<=12)
+    else if(color==1 && *(initial+1)<13)
     {
-        *(gr_ptr+1+(12-*(initial+1))*3)='*';
+        *(g+(12-*(initial+1))*3+1)='*';
     }
 
     else
     {
-        *(gr_ptr+(13-*(initial+1))*3)='*';
+        if(*(initial+1)>7 && *(initial+1)<13)
+        {
+        *(initial+1)+=5;
+        }
+
+        else if(*(initial+1)==13 && temp==7)
+        {
+            *(initial+1)=18;
+        }
+
+        *(g+(18-*(initial+1))*3)='*';
     }
 
-    //clearing previous location    
-
+    if(value!=0)
+    {
+    //clearing previous location
     if(temp<=6) //moving pice to new location
     {   
-        *(gr_ptr+2+3*(temp-1))='*';
+        *(g+2+3*(temp-1))='_';
     }
 
     else if(temp==7)
     {
-        *(gr_ptr+1+3*5)='*';
+        *(g+1+3*5)='_';
     }
 
-    else if(temp>7&&color==1&&temp<=12)
+    else if(color==1 && temp<13)
     {
-        *(gr_ptr+1+(12-temp)*3)='*';
+        *(g+(12-temp)*3+1)='_';
     }
 
     else
     {
-        *(gr_ptr+(13-temp)*3)='*';
+        if(temp>7 && temp<13)
+        {
+        temp+=5;
+        }
+        
+        *(g+(18-temp)*3)='_';
+    }
     }
 }
 
-void area_r(int value,int *initial, int color)
+void area_r(int value,int *initial, int color, char*r, char *b, char *y, char *g)
 {
     int temp=*(initial+1);
-    if(value+*(initial+1)>13)
-    {
-        *(initial)++; //to move to next kingdom
-    }
-
     *(initial+1)+=value;
 
-    if(*(initial+1)<=6) //moving pice to new location
+    if(*(initial+1)>18)
+    {
+        *(r+(temp-13))='_';//clearing past record
+
+        value=*(initial+1)-18;
+        *(initial+1)=value;
+        value=0;
+        *(initial)+=1;
+        area_b(value, initial, color, b,y,g,r);
+        return(0);
+        //to move to next kingdom
+    }
+
+    //moving pice to new location
+    if(*(initial+1)<=6 && *(initial)==2)  //if it is in the same kingdom
     {   
-        *(re_ptr+17-*(initial+1))='*';
+        *(r+18-*(initial+1))='*';
     }
 
     else if(*(initial+1)==7)
     {
-        *(re_ptr+6)='*';
+        *(r+6)='*';
     }
 
-    else if(*(initial+1)>7&&color==2&&*(initial+1)<=12)
+    else if(color==2 && *(initial+1)<13)
     {
-        *(re_ptr+(initial+1)-1)='*';
+        *(r+*(initial+1)-1)='*';
     }
 
     else
     {
-        *(re_ptr+(*(initial+1)-8))='*';
+        if(*(initial+1)>7 && *(initial+1)<13)
+        {
+            *(initial+1)+=5;
+        }
+
+        else if(*(initial+1)==13 && temp==7)
+        {
+            *(initial+1)=18;
+        }
+
+        *(r+(*(initial+1)-13))='*';
     }
 
-    //clearing previous location    
+    //clearing previous location
 
+    if(value!=0)
+    {
     if(temp<=6)
     {   
-        *(re_ptr+17-temp)='*';
+        *(r+18-temp)='_';
     }
 
     else if(temp==7)
     {
-        *(re_ptr+6)='*';
+        *(r+6)='_';
     }
 
-    else if(temp>7&&color==2&&temp<=12) //for home pices (red pices for red kingdom)
+    else if(color==2 && temp<13)
     {
-        *(re_ptr+temp-1)='*';
+        *(r+temp-1)='_';
     }
 
     else
     {
-        *(re_ptr+temp-8)='*';
+        if(temp>7 && temp<13)
+        {
+            temp+=5;
+        }
+        *(r+temp-13)='_';
+    }
     }
 }
 
-void area_b(int value,int *initial,int color)
+void area_b(int value,int *initial, int color, char *b, char *y, char *g, char *r)
 {
     int temp=*(initial+1);
-
-    if(value+*(initial+1)>13)
-    {
-        *(initial)++; //to move to next kingdom
-    }
-
     *(initial+1)+=value;
 
-    if(*(initial+1)<=6) //moving pice to new location
+    if(*(initial+1)>18)
+    {
+        *(b+3*temp-37)='_';//clearing past record
+
+        value=*(initial+1)-18;
+        *(initial+1)=value;
+        value=0;
+        *(initial)+=1;
+        area_y(value, initial, color, y, g, r, b);
+        return(0);
+        //to move to next kingdom
+    }
+
+    if(*(initial+1)<=6 && *(initial)==3) //moving pice to new location
     {   
-        *(bl_ptr+18-(3*(*(initial+1))))='*';
+        *(b+18-(3*(*(initial+1))))='*';
     }
 
     else if(*(initial+1)==7)
     {
-        *(bl_ptr+1)='*';
+        *(b+1)='*';
     }
 
-    else if(*(initial+1)>7&&color==3&&*(initial+1)<=12)
+    else if(color==3 && *(initial+1)<13)
     {
-        *(bl_ptr+1+(*(initial+1)-7)*3)='*';
+        *(b+1+(*(initial+1)-7)*3)='*';
     }
 
     else
     {
-        *(bl_ptr+((*(initial+1)-7)*3)-1)='*';
+        if(*(initial+1)>7 && *(initial+1)<13)
+        {
+        *(initial+1)+=5;
+        }
+
+        else if(*(initial+1)==13 && temp==7)
+        {
+            *(initial+1)=18;
+        }
+
+        *(b+3*(*(initial+1))-37)='*';
     }
 
     //clearing previous location    
+
+    if(value!=0)
+    {
 
     if(temp <= 6) //moving pice to new location
     {   
-        *(bl_ptr+18-(3*temp))='*';
+        *(b+18-(3*temp))='_';
     }
 
     else if(temp == 7)
     {
-        *(bl_ptr+1)='*';
+        *(b+1)='_';
     }
 
-    else if(temp > 7 && color==3 && temp<=12)
+    else if(color==3 && temp<13)
     {
-        *(bl_ptr+1+(temp-7)*3)='*';
+        *(b+1+(temp-7)*3)='_';
     }
 
     else
     {
-        *(bl_ptr+((temp-7)*3)-1)='*';
+        if(temp>7 && temp<13)
+        {
+        temp+=5;
+        }
+        *(b+3*temp-37)='_';
+    }
     }
 }
 
-void area_y(int value,int *initial, int color)
+void area_y(int value,int *initial, int color, char *y, char *g, char *r, char *b)
 {
     int temp=*(initial+1);
-    if(value+*(initial+1)>13)
-    {
-        *(initial)++; //to move to next kingdom
-    }
-
     *(initial+1)+=value;
 
-    if(*(initial+1)<=6) //moving pice to new location
+    if(*(initial+1)>18)
+    {
+        *(y+30-temp)='_';
+
+        value=*(initial+1)-18;
+        *(initial+1)=value;
+        value=0;
+        *(initial)=1;
+        area_g(value, initial, color,g,r,b,y);
+        return(0);
+        //to move to next kingdom
+    }
+
+    if(*(initial+1)<=6 && *(initial)==4) //moving pice to new location
     {   
-        *(ye_ptr+*(initial+1)-1)='*';
+        *(y+*(initial+1)-1)='*';
     }
 
     else if(*(initial+1)==7)
     {
-        *(ye_ptr+11)='*';
+        *(y+11)='*';
     }
 
-    else if(*(initial+1)>7&&color==4&&*(initial+1)<=12)
+    else if(color==4 && *(initial+1)<13)
     {
-        *(ye_ptr + 18 - *(initial+1))='*';
+        *(y + 18 - *(initial+1))='*';
     }
 
     else
     {
-        *(ye_ptr + 25 - *(initial+1))='*';
+        if(*(initial+1)>7 && *(initial+1)<13)
+        {
+        *(initial+1)+=5;
+        }
+
+       else if(*(initial+1)==13 && temp==7)
+        {
+            *(initial+1)=18;
+        } 
+
+        *(y+30-*(initial+1))='*';
     }
 
     //clearing previous location    
 
-    if(temp<=6) //moving pice to new location
-    {   
-        *(ye_ptr + temp - 1)='*';
-    }
-
-    else if(temp==7)
+    if(value!=0)
     {
-        *(ye_ptr+6)='*';
-    }
+        if(temp<=6 && *(initial)==4) //moving pice to new location
+        {   
+            *(y+temp-1)='_';
+        }
 
-    else if(temp>7 && color==4 && temp<=12)
-    {
-        *(ye_ptr + 18 - temp)='*';
-    }
+        else if(temp==7)
+        {
+            *(y+11)='_';
+        }
 
-    else
-    {
-        *(ye_ptr + 25 - temp)='*';
+        else if(color==4 && temp<13)
+        {
+            *(y + 18 - temp)='_';
+        }
+
+        else
+        {
+            if(temp>=7 && temp<13)
+            {
+            temp+=5;
+            }
+            *(y+30-temp)='_';
+        }
     }
 }
 
