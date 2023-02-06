@@ -31,9 +31,9 @@ int main(void)
     ptr_pices=&pices[0][0];
     int value=0;
 
-    *(ptr_pices)=3;
+    *(ptr_pices)=2;
 
-    *(ptr_pices+1)=1;
+    *(ptr_pices+1)=13;
 
     printf("%d %d", pices[0][0], pices[0][1]);
 
@@ -46,7 +46,7 @@ int main(void)
         }
     
         value=0;
-        display(gr_ptr,bl_ptr,re_ptr,ye_ptr);
+        kingdom_finder(value, ptr_pices,3,gr_ptr, re_ptr, bl_ptr, ye_ptr);
 
     while(*(gr_ptr+1)!='*')
     {
@@ -55,7 +55,7 @@ int main(void)
         printf("Enter value: ");
         scanf("%d", &value);
 
-        kingdom_finder(value, ptr_pices,3,gr_ptr, re_ptr, bl_ptr, ye_ptr);
+        kingdom_finder(value, ptr_pices,1,gr_ptr, re_ptr, bl_ptr, ye_ptr);
     }
 
     display(gr_ptr,bl_ptr,re_ptr,ye_ptr);
@@ -99,6 +99,7 @@ void area_g(int value,int *initial, int color,char *g, char *r, char *b, char *y
         value=0; //as coordinates are already assigned, putting value = 0
         *(initial)+=1;
         area_r(value, initial, color,r,b,y,g);
+        return(0);
         //to move to next kingdom
     }
 
@@ -122,6 +123,11 @@ void area_g(int value,int *initial, int color,char *g, char *r, char *b, char *y
         if(*(initial+1)>7 && *(initial+1)<13)
         {
         *(initial+1)+=5;
+        }
+
+        else if(*(initial+1)==13 && temp==7)
+        {
+            *(initial+1)=18;
         }
 
         *(g+(18-*(initial+1))*3)='*';
@@ -197,6 +203,12 @@ void area_r(int value,int *initial, int color, char*r, char *b, char *y, char *g
         {
             *(initial+1)+=5;
         }
+
+        else if(*(initial+1)==13 && temp==7)
+        {
+            *(initial+1)=18;
+        }
+
         *(r+(*(initial+1)-13))='*';
     }
 
@@ -244,6 +256,7 @@ void area_b(int value,int *initial, int color, char *b, char *y, char *g, char *
         value=0;
         *(initial)+=1;
         area_y(value, initial, color, y, g, r, b);
+        return(0);
         //to move to next kingdom
     }
 
@@ -268,6 +281,12 @@ void area_b(int value,int *initial, int color, char *b, char *y, char *g, char *
         {
         *(initial+1)+=5;
         }
+
+        else if(*(initial+1)==13 && temp==7)
+        {
+            *(initial+1)=18;
+        }
+
         *(b+3*(*(initial+1))-37)='*';
     }
 
@@ -316,6 +335,7 @@ void area_y(int value,int *initial, int color, char *y, char *g, char *r, char *
         value=0;
         *(initial)=1;
         area_g(value, initial, color,g,r,b,y);
+        return(0);
         //to move to next kingdom
     }
 
@@ -340,6 +360,12 @@ void area_y(int value,int *initial, int color, char *y, char *g, char *r, char *
         {
         *(initial+1)+=5;
         }
+
+       else if(*(initial+1)==13 && temp==7)
+        {
+            *(initial+1)=18;
+        } 
+
         *(y+30-*(initial+1))='*';
     }
 
@@ -364,7 +390,7 @@ void area_y(int value,int *initial, int color, char *y, char *g, char *r, char *
 
         else
         {
-            if(temp>7 && temp<13)
+            if(temp>=7 && temp<13)
             {
             temp+=5;
             }
