@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <conio.h>
 
 int i,j;
 void display(char*,char*,char*,char*); //for displaying (giving input the four char arrays)
@@ -63,6 +64,8 @@ int main(void)
 
         printf("PRESS ENTER TO CONTINUE.");
         null=getchar();
+
+        system("clear");
         }
 
         value=0;
@@ -71,6 +74,7 @@ int main(void)
 
     while(*(ptr_home)!=1)
     {
+        system("cls");
         display(gr_ptr,bl_ptr,re_ptr,ye_ptr);
         printf("\nThe Coords are %d %d\n\n", pices[0][0], pices[0][1]);
         
@@ -82,7 +86,7 @@ int main(void)
 
         kingdom_finder(value, ptr_pices,1,gr_ptr, re_ptr, bl_ptr, ye_ptr);
     }
-
+    system("cls");
     display(gr_ptr,bl_ptr,re_ptr,ye_ptr);
 }
 
