@@ -23,6 +23,8 @@ int main(void)
     char *gr_ptr, *bl_ptr, *re_ptr, *ye_ptr;
     gr_ptr=&green_area[0][0];bl_ptr=&blue_area[0][0];re_ptr=&red_area[0][0];ye_ptr=&yellow_area[0][0];
 
+    char null='\0';
+
     for(i=0;i<18;i++)
     {
         *(gr_ptr+i)=*(bl_ptr+i)=*(re_ptr+i)=*(ye_ptr+i)='_';//assigning the blank spaces.
@@ -46,31 +48,39 @@ int main(void)
     
     int value=0;
 
-    *(ptr_pices)=3;
-    *(ptr_pices+1)=7;
+    *(ptr_pices)=1;
+    *(ptr_pices+1)=14;
 
     printf("%d %d", pices[0][0], pices[0][1]);
 
     while(value!=6)
         {
-        printf("\n%d %d\n", pices[0][0], pices[0][1]);
+        printf("\nThe coords are %d %d\n\n", pices[0][0], pices[0][1]);
         display(gr_ptr,bl_ptr,re_ptr,ye_ptr);
-        printf("Enter value: ");
-        scanf("%d", &value);
+        
+        value=dice();
+        printf("The Dice Value is %d\n", value);
+
+        printf("PRESS ENTER TO CONTINUE.");
+        null=getchar();
         }
 
         value=0;
 
         kingdom_finder(value, ptr_pices,3,gr_ptr, re_ptr, bl_ptr, ye_ptr);
 
-    while(*(ptr_home+1)!=1)
+    while(*(ptr_home)!=1)
     {
         display(gr_ptr,bl_ptr,re_ptr,ye_ptr);
-        printf("\n%d %d\n", pices[0][0], pices[0][1]);
-        printf("Enter value: ");
-        scanf("%d", &value);
+        printf("\nThe Coords are %d %d\n\n", pices[0][0], pices[0][1]);
+        
+        value=dice();
+        printf("The Dice Value is %d\n\n", value);
 
-        kingdom_finder(value, ptr_pices,3,gr_ptr, re_ptr, bl_ptr, ye_ptr);
+        printf("PRESS ENTER TO CONTINUE.");
+        null=getchar();
+
+        kingdom_finder(value, ptr_pices,1,gr_ptr, re_ptr, bl_ptr, ye_ptr);
     }
 
     display(gr_ptr,bl_ptr,re_ptr,ye_ptr);
@@ -502,7 +512,7 @@ void display(char *g,char *b, char *r, char *y)
         printf("\n");
     }
 
-    for(i=0;i<3;i++) //blue
+    for(i=0;i<3;i++) //red and blue
     {
 
         for(j=0;j<6;j++)
@@ -510,9 +520,19 @@ void display(char *g,char *b, char *r, char *y)
             printf("%c ", *(r+j+i*6));
         }
 
-        for(j=0;j<6;j++)
+        if(i==0)
         {
-            printf(" ");
+            printf("  %d   ", *(ptr_home+2));
+        }
+        
+        else if(i==1)
+        {
+            printf("%d   %d ", *(ptr_home+1), *(ptr_home+3));
+        }
+
+        else
+        {
+            printf("  %d   ", *(ptr_home));
         }
 
         for(j=0;j<6;j++)
