@@ -46,8 +46,8 @@ int main(void)
     
     int value=0;
 
-    *(ptr_pices)=1;
-    *(ptr_pices+1)=1;
+    *(ptr_pices)=3;
+    *(ptr_pices+1)=7;
 
     printf("%d %d", pices[0][0], pices[0][1]);
 
@@ -70,7 +70,7 @@ int main(void)
         printf("Enter value: ");
         scanf("%d", &value);
 
-        kingdom_finder(value, ptr_pices,2,gr_ptr, re_ptr, bl_ptr, ye_ptr);
+        kingdom_finder(value, ptr_pices,3,gr_ptr, re_ptr, bl_ptr, ye_ptr);
     }
 
     display(gr_ptr,bl_ptr,re_ptr,ye_ptr);
