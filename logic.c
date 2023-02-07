@@ -13,6 +13,10 @@ void area_y(int,int *,int, char *, char *,char *, char *); //navigation function
 
 int dice(void); //dice
 
+//declaring count of home pices (won pices)
+    int home[4];
+    int *ptr_home;
+    
 int main(void)
 {
     char green_area[6][3],blue_area[6][3],red_area[3][6], yellow_area[3][6];
@@ -24,10 +28,16 @@ int main(void)
         *(gr_ptr+i)=*(bl_ptr+i)=*(re_ptr+i)=*(ye_ptr+i)='_';//assigning the blank spaces.
     }
 
-
     int pices[1][2]; //coords of pices (kingdom/coord)
     int *ptr_pices; //for storing posititon of pices (kingdom,location)
     ptr_pices=&pices[0][0]; //liking pointer
+
+    //assiging count 0.
+    ptr_home=&home[0];
+    for(i=0;i<4;i++)
+    {
+        *(ptr_home+i)=0;
+    }
 
     //1-green
     //2-red
@@ -37,7 +47,7 @@ int main(void)
     int value=0;
 
     *(ptr_pices)=1;
-    *(ptr_pices+1)=14;
+    *(ptr_pices+1)=1;
 
     printf("%d %d", pices[0][0], pices[0][1]);
 
@@ -53,14 +63,14 @@ int main(void)
 
         kingdom_finder(value, ptr_pices,3,gr_ptr, re_ptr, bl_ptr, ye_ptr);
 
-    while(green_area[0][1]!='*')
+    while(*(ptr_home+1)!=1)
     {
         display(gr_ptr,bl_ptr,re_ptr,ye_ptr);
         printf("\n%d %d\n", pices[0][0], pices[0][1]);
         printf("Enter value: ");
         scanf("%d", &value);
 
-        kingdom_finder(value, ptr_pices,1,gr_ptr, re_ptr, bl_ptr, ye_ptr);
+        kingdom_finder(value, ptr_pices,2,gr_ptr, re_ptr, bl_ptr, ye_ptr);
     }
 
     display(gr_ptr,bl_ptr,re_ptr,ye_ptr);
@@ -72,7 +82,6 @@ void kingdom_finder(int value, int *initial_kingdom,int color,char *g, char *r, 
     {
         case 1:
         area_g(value, initial_kingdom,color, g,r,b,y);
-        
         break;
 
         case 2:
@@ -118,9 +127,23 @@ void area_g(int value,int *initial, int color,char *g, char *r, char *b, char *y
         *(g+1+3*5)='*';
     }
 
-    else if(color==1 && *(initial+1)<13)
+    else if(color==1 && (*(initial+1)<13 || temp<13))
     {
+        if(*(initial+1)==13)  //condition for reaching home
+        {
+            *(ptr_home)+=1; //increasing count by 1
+        }
+
+        else if(*(initial+1)>13) //if value is larger then dumping the increament
+        {
+            *(initial+1)=temp;
+            value=0;
+        }
+
+        else
+        {
         *(g+(12-*(initial+1))*3+1)='*';
+        }
     }
 
     else
@@ -197,9 +220,23 @@ void area_r(int value,int *initial, int color, char*r, char *b, char *y, char *g
         *(r+6)='*';
     }
 
-    else if(color==2 && *(initial+1)<13)
+    else if(color==2 && (*(initial+1)<13 || temp<13))
     {
+        if(*(initial+1)==13)  //condition for reaching home
+        {
+            *(ptr_home+1)+=1; //increasing count by 1
+        }
+
+        else if(*(initial+1)>13) //if value is larger then dumping the increament
+        {
+            *(initial+1)=temp;
+            value=0;
+        }
+
+        else
+        {
         *(r+*(initial+1)-1)='*';
+        }
     }
 
     else
@@ -275,9 +312,23 @@ void area_b(int value,int *initial, int color, char *b, char *y, char *g, char *
         *(b+1)='*';
     }
 
-    else if(color==3 && *(initial+1)<13)
+    else if(color==3 && (*(initial+1)<13 || temp<13))
     {
+        if(*(initial+1)==13)  //condition for reaching home
+        {
+            *(ptr_home+2)+=1; //increasing count by 1
+        }
+
+        else if(*(initial+1)>13) //if value is larger then dumping the increament
+        {
+            *(initial+1)=temp;
+            value=0;
+        }
+
+        else
+        {
         *(b+1+(*(initial+1)-7)*3)='*';
+        }
     }
 
     else
@@ -354,9 +405,23 @@ void area_y(int value,int *initial, int color, char *y, char *g, char *r, char *
         *(y+11)='*';
     }
 
-    else if(color==4 && *(initial+1)<13)
+    else if(color==4 && (*(initial+1)<13 || temp<13))
     {
+        if(*(initial+1)==13)  //condition for reaching home
+        {
+            *(ptr_home+3)+=1; //increasing count by 1
+        }
+
+        else if(*(initial+1)>13) //if value is larger then dumping the increament
+        {
+            *(initial+1)=temp;
+            value=0;
+        }
+
+        else
+        {
         *(y + 18 - *(initial+1))='*';
+        }
     }
 
     else
