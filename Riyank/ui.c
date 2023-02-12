@@ -87,12 +87,15 @@ void area_finder(int value, int *initial_kingdom)
     
     case 2:
         c='+';
+        break;
     
     case 3:
         c='/';
+        break;
     
     case 4:
         c='?';
+        break;
     }
 
     switch(*(initial_kingdom))
