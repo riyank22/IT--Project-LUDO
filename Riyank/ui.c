@@ -1,3 +1,5 @@
+//program for ludo (terminal based)
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -9,10 +11,10 @@ void area_g(int,int *, char); //navigation function in green kingdom
 void area_r(int,int *, char); //navigation function in red kingdom
 void area_b(int,int *, char); //navigation function in blue kingdom
 void area_y(int,int *, char); //navigation function in yellow kingdom
-void gr_player();
+/*void gr_player();
 void re_player();
 void bl_player();
-void ye_player();
+void ye_player();*/
 
 int dice(void); //dice
 
@@ -49,26 +51,31 @@ int main(void)
     
     int value=0;
 
-    *(ptr_tokens)=1;
-    *(ptr_tokens+1)=14;
-    *(ptr_tokens+2)=3;
+
+    printf("\n\nEnter the initial coords: ");
+    printf("\nEnter the colorcode: ");
+    scanf("%d", ptr_tokens+2);
+    printf("\nInitial Area and place: ");
+    scanf("%d %d", ptr_tokens, ptr_tokens+1);
 
     printf("%d %d", tokens[0][0], tokens[0][1]);
 
    char null='\0';
 
-    while(*(ptr_homecount)!=1)
+    system("clear");
+    null=getchar();
+
+    while(*(ptr_homecount+*(ptr_tokens+2)-1)!=1)
     {
         area_finder(value, ptr_tokens);
         display();
         printf("\nThe Coords are %d %d\n\n", tokens[0][0], tokens[0][1]);
-        
-        value=dice();
         printf("The Dice Value is %d\n\n", value);
 
         printf("PRESS ENTER TO CONTINUE.");
         null=getchar();
-        
+
+        value=dice();
         system("clear");
     }
     system("clear");
