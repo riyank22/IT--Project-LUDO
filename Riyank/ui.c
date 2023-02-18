@@ -19,9 +19,10 @@ void ye_player();*/
 int dice(void); //dice
 
 //declaring count of homecount tokens (won tokens)
-    int homecount[4];
+    int homecount[4]={0,0,0,0};
     int *ptr_homecount;
-    char *gr_ptr, *bl_ptr, *re_ptr, *ye_ptr;
+    char *gr_ptr, *bl_ptr, *re_ptr, *ye_ptr;//pointers pointing to the area arrays
+    char *homelock_ptr; //pointer pointing to the arrays storing data for homelock ptr.
     
 int main(void)
 {
@@ -36,13 +37,16 @@ int main(void)
     int tokens[16][4]; //coords of tokens (kingdom/coord)
     int *ptr_tokens; //for storing posititon of tokens (kingdom,location)
     ptr_tokens=&tokens[0][0]; //liking pointer
+    char homelock [4][4]={
+                            {"****"},
+                            {"++++"},
+                            {"////"},
+                            {"????"}
+                         };
+    homelock_ptr=&homelock[0][0];
 
     //assiging count 0.
     ptr_homecount=&homecount[0];
-    for(i=0;i<4;i++)
-    {
-        *(ptr_homecount+i)=0;
-    }
 
     //1-green
     //2-red
@@ -521,9 +525,18 @@ void display()
 {
     for(i=0;i<6;i++) //blue
     {
-        for(j=0;j<12;j++)
+        for(j=0;j<12 && i!=2 && i!=4;j++)
         {
             printf(" ");
+        }
+
+        if(i==2)
+        {
+            printf("  %c   %c     ", *(homelock_ptr+4),*(homelock_ptr+4+1));
+        }
+        else if(i==4)
+        {
+            printf("  %c   %c     ", *(homelock_ptr+4+2),*(homelock_ptr+4+3));
         }
 
         for(j=0;j<3;j++)
@@ -531,10 +544,20 @@ void display()
             printf("%c ", *(bl_ptr+j+i*3));
         }
 
-        for(j=0;j<12;j++)
+        for(j=0;j<12 && i!=2 && i!=4;j++)
         {
             printf(" ");
         }
+
+        if(i==2)
+        {
+            printf("  %c   %c     ", *(homelock_ptr+8),*(homelock_ptr+8+1));
+        }
+        else if(i==4)
+        {
+            printf("  %c   %c     ", *(homelock_ptr+8+2),*(homelock_ptr+8+3));
+        }
+
         printf("\n");
     }
 
@@ -570,9 +593,18 @@ void display()
 
     for(i=0;i<6;i++) //green
     {
-        for(j=0;j<12;j++)
+        for(j=0;j<12 && i!=2 && i!=4;j++)
         {
             printf(" ");
+        }
+
+        if(i==2)
+        {
+            printf("  %c   %c     ", *(homelock_ptr),*(homelock_ptr+1));
+        }
+        else if(i==4)
+        {
+            printf("  %c   %c     ", *(homelock_ptr+2),*(homelock_ptr+3));
         }
 
         for(j=0;j<3;j++)
@@ -580,9 +612,18 @@ void display()
             printf("%c ", *(gr_ptr+j+i*3));
         }
 
-        for(j=0;j<12;j++)
+        for(j=0;j<12 && i!=2 && i!=4;j++)
         {
             printf(" ");
+        }
+
+        if(i==2)
+        {
+            printf("  %c   %c     ", *(homelock_ptr+12),*(homelock_ptr+12+1));
+        }
+        else if(i==4)
+        {
+            printf("  %c   %c     ", *(homelock_ptr+12+2),*(homelock_ptr+12+3));
         }
         printf("\n");
     }
