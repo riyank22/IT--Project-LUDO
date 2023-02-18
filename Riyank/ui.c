@@ -2,27 +2,33 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 int i,j;
 void display(); //for displaying (giving input the four char arrays)
 
-void area_finder(int,int *); //value, initial kingdomn(kingdom number and postion)
-void area_g(int,int *, char); //navigation function in green kingdom
-void area_r(int,int *, char); //navigation function in red kingdom
-void area_b(int,int *, char); //navigation function in blue kingdom
-void area_y(int,int *, char); //navigation function in yellow kingdom
-/*void gr_player();
-void re_player();
+void area_finder(int,int *, int,char); //value, initial kingdomn(kingdom number and postion)
+void area_g(int,int *, char, int); //navigation function in green kingdom
+void area_r(int,int *, char, int); //navigation function in red kingdom
+void area_b(int,int *, char, int); //navigation function in blue kingdom
+void area_y(int,int *, char, int); //navigation function in yellow kingdom
+void homelock_manipulator(int);
+int difference(int);
+void gr_player();
+/*void re_player();
 void bl_player();
 void ye_player();*/
 
 int dice(void); //dice
 
 //declaring count of homecount tokens (won tokens)
-    int homecount[4]={0,0,0,0};
-    int *ptr_homecount;
-    char *gr_ptr, *bl_ptr, *re_ptr, *ye_ptr;//pointers pointing to the area arrays
-    char *homelock_ptr; //pointer pointing to the arrays storing data for homelock ptr.
+int tokens[16][4]; //coords of tokens (kingdom/coord/colour/sequence)
+int homecount[4]={0,0,0,0};
+int choices[4]={0,0,0,0}; //showing no. of choices (g,r,b,y)
+int *ptr_tokens; //for storing posititon of tokens (kingdom,location)
+
+char *gr_ptr, *bl_ptr, *re_ptr, *ye_ptr;//pointers pointing to the area arrays
+char *homelock_ptr; //pointer pointing to the arrays storing data for homelock ptr.
     
 int main(void)
 {
@@ -34,8 +40,20 @@ int main(void)
         *(gr_ptr+i)=*(bl_ptr+i)=*(re_ptr+i)=*(ye_ptr+i)='_';//assigning the blank spaces.
     }
 
-    int tokens[16][4]; //coords of tokens (kingdom/coord)
-    int *ptr_tokens; //for storing posititon of tokens (kingdom,location)
+    for(i=0;i<16;i++)
+    {
+        tokens[i][3]=i+1;
+    }
+
+    for(i=0,j=1;i<16;i++)
+    {
+        tokens[i][2]=j;
+        if(i%4==3)
+        {
+            j++;
+        }
+    }
+
     ptr_tokens=&tokens[0][0]; //liking pointer
     char homelock [4][4]={
                             {"****"},
@@ -46,151 +64,107 @@ int main(void)
     homelock_ptr=&homelock[0][0];
 
     //assiging count 0.
-    ptr_homecount=&homecount[0];
 
     //1-green
     //2-red
     //3-blue
     //4-yellow
-    
-    int value=0;
-
-
-    printf("\n\nEnter the initial coords: ");
-    printf("\nEnter the colorcode: ");
-    scanf("%d", ptr_tokens+2);
-    printf("\nInitial Area and place: ");
-    scanf("%d %d", ptr_tokens, ptr_tokens+1);
-
-    printf("%d %d", tokens[0][0], tokens[0][1]);
-
-   char null='\0';
 
     system("clear");
-    null=getchar();
+    printf("welcome\n");
 
-    while(*(ptr_homecount+*(ptr_tokens+2)-1)!=1)
+    while(homecount[*(ptr_tokens+2)-1]!=1) //colour code
     {
-        area_finder(value, ptr_tokens);
-        display();
-        printf("\nThe Coords are %d %d\n\n", tokens[0][0], tokens[0][1]);
-        printf("The Dice Value is %d\n\n", value);
-
-        printf("PRESS ENTER TO CONTINUE.");
-        null=getchar();
-
-        value=dice();
-        system("clear");
+        gr_player();
     }
     system("clear");
     display();
 }
 
-void area_finder(int value, int *initial_kingdom)
+void area_finder(int value, int *token, int user_choice,char c)
 {
-    char c;
-    switch (*(initial_kingdom+2))
-
-    {
-    case 1:
-        c='*';
-        break;
-    
-    case 2:
-        c='+';
-        break;
-    
-    case 3:
-        c='/';
-        break;
-    
-    case 4:
-        c='?';
-        break;
-    }
-
-    switch(*(initial_kingdom))
+    switch(*(token+user_choice))
     {
         case 1:
-        area_g(value, initial_kingdom,c);
+        area_g(value, token,c, user_choice);
         break;
 
         case 2:
-        area_r(value, initial_kingdom,c);
+        area_r(value, token,c, user_choice);
         break;
 
         case 3:
-        area_b(value, initial_kingdom,c);
+        area_b(value, token,c, user_choice);
         break;
 
         case 4:
-        area_y(value, initial_kingdom,c);
+        area_y(value, token,c, user_choice);
         break;
     }
 
 }
 
-void area_g(int value,int *initial,char c)
+void area_g(int value,int *token,char c, int user_choice)
 {
-    int temp=*(initial+1);
-    *(initial+1)+=value;
+    int temp=*(token+1+user_choice);
+    *(token+1+user_choice)+=value;
 
-    if(*(initial+1)>18)
+    if(*(token+1+user_choice)>18)
     {
         *(gr_ptr+(18-temp)*3)='_';//clearing past record
 
-        value=*(initial+1)-18; //finding the coordinates to move in next kingdom
-        *(initial+1)=value; //assigning the coords of the next kingdom
+        value=*(token+1+user_choice)-18; //finding the coordinates to move in next kingdom
+        *(token+1+user_choice)=value; //assigning the coords of the next kingdom
         value=0; //as coordinates are already assigned, putting value = 0
-        *(initial)+=1;
+        *(token+user_choice)+=1;
 
-        area_r(value, initial, c);
+        area_r(value, token, c,user_choice);
         goto end;
         //to move to next kingdom
     }
 
-    if(*(initial+1)<=6 && *(initial)==1) //moving pice to new location
+    if(*(token+1+user_choice)<=6) //moving pice to new location
     {   
-        *(gr_ptr+2+3*(*(initial+1)-1))=c;
+        *(gr_ptr+2+3*(*(token+1+user_choice)-1))=c;
     }
 
-    else if(*(initial+1)==7)
+    else if(*(token+1+user_choice)==7)
     {
         *(gr_ptr+1+3*5)=c;
     }
 
-    else if(*(initial+2)==1 && (*(initial+1)<13 || temp<13))
+    else if(*(token+2+user_choice)==1 && (*(token+1+user_choice)<13 || temp<13))
     {
-        if(*(initial+1)==13)  //condition for reaching homecount
+        if(*(token+1+user_choice)==13)  //condition for reaching homecount
         {
-            *(ptr_homecount)+=1; //increasing count by 1
+            homecount[0]++; //increasing count by 1
         }
 
-        else if(*(initial+1)>13) //if value is larger then dumping the increament
+        else if(*(token+1+user_choice)>13) //if value is larger then dumping the increament
         {
-            *(initial+1)=temp;
+            *(token+1+user_choice)=temp;
             value=0;
         }
 
         else
         {
-        *(gr_ptr+(12-*(initial+1))*3+1)=c;
+        *(gr_ptr+(12-*(token+1+user_choice))*3+1)=c;
         }
     }
 
     else
     {
-        if(*(initial+1)>7 && *(initial+1)<13)
+        if(*(token+1+user_choice)>7 && *(token+1+user_choice)<13)
         {
-        *(initial+1)+=5;
+        *(token+1+user_choice)+=5;
         }
 
-        else if(*(initial+1)==13 && temp==7)
+        else if(*(token+1+user_choice)==13 && temp==7)
         {
-            *(initial+1)=18;
+            *(token+1+user_choice)=18;
         }
-
-        *(gr_ptr+(18-*(initial+1))*3)=c;
+        printf("Alpha\n");
+        *(gr_ptr+(18-*(token+1+user_choice))*3)=c;
     }
 
     if(value!=0)
@@ -206,7 +180,7 @@ void area_g(int value,int *initial,char c)
         *(gr_ptr+1+3*5)='_';
     }
 
-    else if(*(initial+2)==1 && temp<13)
+    else if(*(token+2)==1 && temp<13)
     {
         *(gr_ptr+(12-temp)*3+1)='_';
     }
@@ -225,67 +199,67 @@ void area_g(int value,int *initial,char c)
     end:
 }
 
-void area_r(int value,int *initial, char c)
+void area_r(int value,int *token, char c, int user_choice)
 {
-    int temp=*(initial+1);
-    *(initial+1)+=value;
+    int temp=*(token+user_choice+1);
+    *(token+user_choice+1)+=value;
 
-    if(*(initial+1)>18)
+    if(*(token+user_choice+1)>18)
     {
         *(re_ptr+(temp-13))='_';//clearing past record
 
-        value=*(initial+1)-18;
-        *(initial+1)=value;
+        value=*(token+user_choice+1)-18;
+        *(token+user_choice+1)=value;
         value=0;
-        *(initial)+=1;
-        area_b(value, initial,c);
+        *(token)+=1;
+        area_b(value, token,c,user_choice);
         goto end;
         //to move to next kingdom
     }
 
     //moving pice to new location
-    if(*(initial+1)<=6 && *(initial)==2)  //if it is in the same kingdom
+    if(*(token+user_choice+1)<=6)  //if it is in the same kingdom
     {   
-        *(re_ptr+18-*(initial+1))=c;
+        *(re_ptr+18-*(token+user_choice+1))=c;
     }
 
-    else if(*(initial+1)==7)
+    else if(*(token+user_choice+1)==7)
     {
         *(re_ptr+6)=c;
     }
 
-    else if(*(initial+2)==2 && (*(initial+1)<13 || temp<13))
+    else if(*(token+user_choice+2)==2 && (*(token+user_choice+1)<13 || temp<13))
     {
-        if(*(initial+1)==13)  //condition for reaching homecount
+        if(*(token+user_choice+1)==13)  //condition for reaching homecount
         {
-            *(ptr_homecount+1)+=1; //increasing count by 1
+            homecount[1]++;; //increasing count by 1
         }
 
-        else if(*(initial+1)>13) //if value is larger then dumping the increament
+        else if(*(token+user_choice+1)>13) //if value is larger then dumping the increament
         {
-            *(initial+1)=temp;
+            *(token+user_choice+1)=temp;
             value=0;
         }
 
         else
         {
-        *(re_ptr+*(initial+1)-1)=c;
+        *(re_ptr+*(token+user_choice+1)-1)=c;
         }
     }
 
     else
     {
-        if(*(initial+1)>7 && *(initial+1)<13)
+        if(*(token+user_choice+1)>7 && *(token+user_choice+1)<13)
         {
-            *(initial+1)+=5;
+            *(token+user_choice+1)+=5;
         }
 
-        else if(*(initial+1)==13 && temp==7)
+        else if(*(token+user_choice+1)==13 && temp==7)
         {
-            *(initial+1)=18;
+            *(token+user_choice+1)=18;
         }
 
-        *(re_ptr+(*(initial+1)-13))=c;
+        *(re_ptr+(*(token+user_choice+1)-13))=c;
     }
 
     //clearing previous location
@@ -302,7 +276,7 @@ void area_r(int value,int *initial, char c)
         *(re_ptr+6)='_';
     }
 
-    else if(*(initial+2)==2 && temp<13)
+    else if(*(token+user_choice+2)==2 && temp<13)
     {
         *(re_ptr+temp-1)='_';
     }
@@ -320,66 +294,66 @@ void area_r(int value,int *initial, char c)
     end:
 }
 
-void area_b(int value,int *initial, char c)
+void area_b(int value,int *token, char c, int user_choice)
 {
-    int temp=*(initial+1);
-    *(initial+1)+=value;
+    int temp=*(token+user_choice+1);
+    *(token+user_choice+1)+=value;
 
-    if(*(initial+1)>18)
+    if(*(token+user_choice+1)>18)
     {
         *(bl_ptr+3*temp-37)='_';//clearing past record
 
-        value=*(initial+1)-18;
-        *(initial+1)=value;
+        value=*(token+user_choice+1)-18;
+        *(token+user_choice+1)=value;
         value=0;
-        *(initial)+=1;
-        area_y(value, initial, c);
+        *(token)+=1;
+        area_y(value, token, c, user_choice);
         goto end;
         //to move to next kingdom
     }
 
-    if(*(initial+1)<=6 && *(initial)==3) //moving pice to new location
+    if(*(token+user_choice+1)<=6) //moving pice to new location
     {   
-        *(bl_ptr+18-(3*(*(initial+1))))=c;
+        *(bl_ptr+18-(3*(*(token+user_choice+1))))=c;
     }
 
-    else if(*(initial+1)==7)
+    else if(*(token+user_choice+1)==7)
     {
         *(bl_ptr+1)=c;
     }
 
-    else if(*(initial+2)==3 && (*(initial+1)<13 || temp<13))
+    else if(*(token+user_choice+2)==3 && (*(token+user_choice+1)<13 || temp<13))
     {
-        if(*(initial+1)==13)  //condition for reaching homecount
+        if(*(token+user_choice+1)==13)  //condition for reaching homecount
         {
-            *(ptr_homecount+2)+=1; //increasing count by 1
+            homecount[2]++;; //increasing count by 1
         }
 
-        else if(*(initial+1)>13) //if value is larger then dumping the increament
+        else if(*(token+user_choice+1)>13) //if value is larger then dumping the increament
         {
-            *(initial+1)=temp;
+            *(token+user_choice+1)=temp;
             value=0;
         }
 
         else
         {
-        *(bl_ptr+1+(*(initial+1)-7)*3)=c;
+        *(bl_ptr+1+(*(token+user_choice+1)-7)*3)=c;
         }
     }
 
     else
     {
-        if(*(initial+1)>7 && *(initial+1)<13)
+        if(*(token+user_choice+1)>7 && *(token+user_choice+1)<13)
         {
-        *(initial+1)+=5;
+        *(token+user_choice+1)+=5;
         }
 
-        else if(*(initial+1)==13 && temp==7)
+        else if(*(token+user_choice+1)==13 && temp==7)
         {
-            *(initial+1)=18;
+            *(token+user_choice+1)=18;
         }
 
-        *(bl_ptr+3*(*(initial+1))-37)=c;
+        *(bl_ptr+3*(*(token+user_choice+1))-37)=c;
     }
 
     //clearing previous location    
@@ -397,7 +371,7 @@ void area_b(int value,int *initial, char c)
         *(bl_ptr+1)='_';
     }
 
-    else if(*(initial+2)==3 && temp<13)
+    else if(*(token+user_choice+2)==3 && temp<13)
     {
         *(bl_ptr+1+(temp-7)*3)='_';
     }
@@ -415,73 +389,73 @@ void area_b(int value,int *initial, char c)
     end:
 }
 
-void area_y(int value,int *initial, char c)
+void area_y(int value,int *token, char c, int user_choice)
 {
-    int temp=*(initial+1);
-    *(initial+1)+=value;
+    int temp=*(token+user_choice+1);
+    *(token+user_choice+1)+=value;
 
-    if(*(initial+1)>18)
+    if(*(token+user_choice+1)>18)
     {
         *(ye_ptr+30-temp)='_';
 
-        value=*(initial+1)-18;
-        *(initial+1)=value;
+        value=*(token+user_choice+1)-18;
+        *(token+user_choice+1)=value;
         value=0;
-        *(initial)=1;
-        area_g(value, initial,c);
+        *(token)=1;
+        area_g(value, token,c,user_choice);
         goto end;
         //to move to next kingdom
     }
 
-    if(*(initial+1)<=6 && *(initial)==4) //moving pice to new location
+    if(*(token+user_choice+1)<=6) //moving pice to new location
     {   
-        *(ye_ptr+*(initial+1)-1)=c;
+        *(ye_ptr+*(token+user_choice+1)-1)=c;
     }
 
-    else if(*(initial+1)==7)
+    else if(*(token+user_choice+1)==7)
     {
         *(ye_ptr+11)=c;
     }
 
-    else if(*(initial+2)==4 && (*(initial+1)<13 || temp<13))
+    else if(*(token+user_choice+2)==4 && (*(token+user_choice+1)<13 || temp<13))
     {
-        if(*(initial+1)==13)  //condition for reaching homecount
+        if(*(token+user_choice+1)==13)  //condition for reaching homecount
         {
-            *(ptr_homecount+3)+=1; //increasing count by 1
+            homecount[3]++;; //increasing count by 1
         }
 
-        else if(*(initial+1)>13) //if value is larger then dumping the increament
+        else if(*(token+user_choice+1)>13) //if value is larger then dumping the increament
         {
-            *(initial+1)=temp;
+            *(token+user_choice+1)=temp;
             value=0;
         }
 
         else
         {
-        *(ye_ptr + 18 - *(initial+1))=c;
+        *(ye_ptr + 18 - *(token+user_choice+1))=c;
         }
     }
 
     else
     {
-        if(*(initial+1)>7 && *(initial+1)<13)
+        if(*(token+user_choice+1)>7 && *(token+user_choice+1)<13)
         {
-        *(initial+1)+=5;
+        *(token+user_choice+1)+=5;
         }
 
-       else if(*(initial+1)==13 && temp==7)
+       else if(*(token+user_choice+1)==13 && temp==7)
         {
-            *(initial+1)=18;
+            *(token+user_choice+1)=18;
         } 
 
-        *(ye_ptr+30-*(initial+1))=c;
+        *(ye_ptr+30-*(token+user_choice+1))=c;
     }
 
     //clearing previous location    
 
     if(value!=0)
     {
-        if(temp<=6 && *(initial)==4) //moving pice to new location
+        if(temp<=6 && *(token)==4) //moving pice to new location
         {   
             *(ye_ptr+temp-1)='_';
         }
@@ -491,7 +465,7 @@ void area_y(int value,int *initial, char c)
             *(ye_ptr+11)='_';
         }
 
-        else if(*(initial+2)==4 && temp<13)
+        else if(*(token+user_choice+2)==4 && temp<13)
         {
             *(ye_ptr + 18 - temp)='_';
         }
@@ -571,17 +545,17 @@ void display()
 
         if(i==0)
         {
-            printf("  %d   ", *(ptr_homecount+2));
+            printf("  %d   ", homecount[2]);
         }
         
         else if(i==1)
         {
-            printf("%d   %d ", *(ptr_homecount+1), *(ptr_homecount+3));
+            printf("%d   %d ", homecount[1], homecount[3]);
         }
 
         else
         {
-            printf("  %d   ", *(ptr_homecount));
+            printf("  %d   ", homecount[0]);
         }
 
         for(j=0;j<6;j++)
@@ -600,7 +574,7 @@ void display()
 
         if(i==2)
         {
-            printf("  %c   %c     ", *(homelock_ptr),*(homelock_ptr+1));
+            printf("  %c   %c     ", *(homelock_ptr),*(homelock_ptr+1)); //green home
         }
         else if(i==4)
         {
@@ -626,5 +600,197 @@ void display()
             printf("  %c   %c     ", *(homelock_ptr+12+2),*(homelock_ptr+12+3));
         }
         printf("\n");
+    }
+}
+
+void gr_player()
+{
+    char dummy;
+    int user_choice=1,value;
+    int diff[3]={7,7,7}; //stating distance between tokens
+
+    /* diff[1]=difference (1,2) */
+
+    if (homecount[0]==4)
+    {
+        goto end;
+    }
+
+    value=dice();
+
+    switch (choices[0])
+    {
+    case 1:
+        break;
+
+    case 4:
+        diff[2]=difference(3);
+
+        if(diff[2]>6)
+        {
+        break;
+        }
+
+    case 3:
+        diff[1]=difference(2);
+
+        if(diff[1]>6)
+        {
+        break;
+        }
+
+    case 2:
+        diff[0]=difference(1);
+        printf("\nDiff 0 is %d", diff[0]);
+        break;
+    
+    default:
+        break;
+    }
+
+    if(choices[0]>1)
+    {
+        while(value==diff[0] || value==diff[1] || value == diff[2])
+        {
+        value=dice();
+        }
+    }
+
+    display();
+
+    if(value==6 && choices[0]+homecount[0]<4)
+    {
+        choices[0]++;
+    }
+
+    printf("%d", choices[0]);
+
+    for(int i=0;i<4;i++)
+    {
+        printf("\nThe Coords for %d are %d %d", tokens[i][3], tokens[i][0], tokens[i][1]);
+    }
+
+    printf("\nThe Dice Value is %d\n\n", value);
+
+    if(choices[0]>0)
+    {
+        if(choices[0]>1)
+        {
+            printf("Enter the choice: ");
+            scanf("%d", &user_choice);
+        }
+
+        if(value==6 && user_choice!=homecount[0]+choices[0])
+        {
+            choices[0]--;
+        }
+
+    else if(value==6)
+    {
+        *(ptr_tokens+(user_choice-1)*4)=1;
+        *(ptr_tokens+(user_choice-1)*4 + 1)=14;
+        homelock_manipulator(0);
+        value=0;
+    }
+
+        area_finder(value, ptr_tokens, 4*(user_choice-1),'*');
+    }   
+        printf("PRESS ENTER TO CONTINUE.\n");
+        dummy=getchar();
+        system("clear");
+
+    end:
+}
+
+void homelock_manipulator(int colourcode)
+{
+    bool kill=0;
+
+    if(kill!=1)
+    {
+        switch (4-homecount[colourcode]-choices[colourcode])
+        {
+        case 0:
+            *(homelock_ptr+4*colourcode)='_';
+            break;
+
+        case 1:
+            *(homelock_ptr+4*colourcode+1)='_';
+            break;
+
+        case 2:
+            *(homelock_ptr+4*colourcode+2)='_';
+            break;
+        
+        case 3:
+            *(homelock_ptr+4*colourcode+3)='_';
+            break;
+        
+        default:
+            break;
+        }
+    }
+
+    else
+    {   
+        char c;
+        switch (colourcode+1)
+        {
+        case 1:
+            c='*';
+            break;
+        
+        case 2:
+            c='+';
+            break;
+        
+        case 3:
+            c='/';
+            break;
+        
+        case 4:
+            c='?';
+            break;
+        }
+
+        switch (4-homecount[colourcode]-choices[colourcode])
+        {
+        case 1:
+            *(homelock_ptr+4*colourcode+2)=c;
+            break;
+
+        case 2:
+            *(homelock_ptr+4*colourcode+1)=c;
+            break;
+
+        case 3:
+            *(homelock_ptr+4*colourcode+0)=c;
+            break;
+        
+        case 0:
+            *(homelock_ptr+4*colourcode+3)=c;
+            break;
+        
+        default:
+            break;
+        }
+    }
+}
+
+int difference(int i)
+{
+    if(tokens[0][i]-tokens[0][i-1]>1)
+    {
+        return(7);
+    }
+
+    else if(tokens[0][i]!=tokens[0][i-1])
+    {
+        return(13+tokens[1][i]-tokens[1][i-1]);
+    }
+
+    else
+    {
+        return(tokens[1][i]-tokens[1][i-1]);
     }
 }
