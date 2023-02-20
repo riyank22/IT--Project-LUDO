@@ -8,22 +8,20 @@ int i,j;
 void display(); //for displaying (giving input the four char arrays)
 
 void area_finder(int, int,char); //value, initial kingdomn(kingdom number and postion)
+
 void area_g(int, char, int); //navigation function in green kingdom
 void area_r(int, char, int); //navigation function in red kingdom
 void area_b(int, char, int); //navigation function in blue kingdom
 void area_y(int, char, int); //navigation function in yellow kingdom
-void homelock_manipulator(int);
-int difference(int);
+
+void homelock_manipulator(int); //for manipulating the homelock strings
 void player(); //game console
 
 int dice(void); //dice
 
-//declaring count of homecount tokens (won tokens)
 int tokens[4][5]; //coords of tokens (sequence/area/location/colourcode/coor symbol/coords x/ coord y)
-
-int homecount[4]={0,0,0,0};
+int homecount[4]={0,0,0,0}; //declaring count of homecount tokens (won tokens) (g,r,b,y)
 int choices[4]={0,0,0,0}; //showing no. of choices (g,r,b,y)
-int *ptr_tokens; //for storing posititon of tokens (kingdom,location)
 
 char *gr_ptr, *bl_ptr, *re_ptr, *ye_ptr;//pointers pointing to the area arrays
 char *homelock_ptr; //pointer pointing to the arrays storing data for homelock ptr.
@@ -54,16 +52,13 @@ int main(void)
         tokens[i][4]=(int)'*';
     }
 
-    ptr_tokens=&tokens[0][0]; //assigning pointer
-    char homelock [4][4]={
+    char homelock [4][4]={ //assigning sybmols
                             {"****"},
                             {"++++"},
                             {"////"},
                             {"????"}
                          };
-    homelock_ptr=&homelock[0][0];
-
-    //assiging count 0.
+    homelock_ptr=&homelock[0][0]; //mapping pointer
     
     //colour code
     //1-green
@@ -71,9 +66,9 @@ int main(void)
     //3-blue
     //4-yellow
 
-    system("clear");
+    system("clear"); //for windows users replease clear to cls
 
-    while(homecount[tokens[0][3]-1]!=4) //terminating condition
+    while(homecount[tokens[0][3]-1]!=4) //terminating condition i.e when all tokens come to the home
     {
         player();
     }
@@ -83,28 +78,29 @@ int main(void)
 
 void player()
 {
-    char dummy;
-    int user_choice=1,value;
+    char dummy; //for handling enter of scanf
+    int user_choice=1; //default choice of user
+    int value; //dice value
 
-    if (homecount[0]==4)
+    if (homecount[0]==4) //for multiplayer
     {
         goto end;
     }
 
-    value=dice();
+    value=dice(); //getting random dice value
 
     printf("\n\nLUDO GAME (TERMINAL BASED)\n\n");
 
-    display();
+    display(); //displaying board
 
-    if(value==6 && choices[0]+homecount[0]<5)
+    if(value==6 && choices[0]+homecount[0]<5) //terminating conditon for inreasing choice
     {
-        choices[0]++;
+        choices[0]++; //max choices =4
     }
 
     for(int i=0;i<4;i++)
     {
-        printf("\nThe Coords for %d are %d %d", tokens[i][0], tokens[i][1], tokens[i][2]);
+        printf("\nThe Coords for %d are %d %d", tokens[i][0], tokens[i][1], tokens[i][2]); //for debuging process
     }
 
     printf("\nThe Dice Value is %d\n\n", value);
@@ -117,12 +113,15 @@ void player()
             scanf("%d", &user_choice);
         }
 
-        if(value==6 && user_choice!=homecount[0]+choices[0])
+/*if the player gets dice value to 6 and she/he wishes to not to put a token out of homelock
+then decreasing the choice.*/
+
+        if(value==6 && user_choice!=homecount[0]+choices[0]) 
         {
             choices[0]--;
         }
 
-        else if(value==6 && choices[0]!=5)
+        else if(value==6 && choices[0]!=5) //bringing the token out of homelock
         {
             tokens[user_choice-1][1]=1;
             tokens[user_choice-1][2]=14;
@@ -130,20 +129,22 @@ void player()
             value=0;
         }
 
+        //continuing the game
         area_finder(value, (user_choice-1), tokens[user_choice-1][4]); //value, sequence, colour symbol
     }   
 
-        if(choices[0]==1)
+        if(choices[0]==1) //for only one choice
         {
         printf("PRESS ENTER TO CONTINUE.");
         dummy=getchar();
         }
-        
+
         system("clear");
 
-    end:
+    end: //if the player had won //multiplayer
 }
 
+//based upon no of tokens out of hoemlock, changing the array of homelock
 void homelock_manipulator(int colourcode)
 {
     switch (4-homecount[0]-choices[0])
@@ -169,9 +170,10 @@ void homelock_manipulator(int colourcode)
     }
 }
 
+//identifying location(area) of token from its area and calling the respective area function
 void area_finder(int value, int user_choice,char c)
 {
-    switch(tokens[user_choice][1]) //identifying location(area) of token from itsarea
+    switch(tokens[user_choice][1])
     {
         case 1:
         area_g(value,c,user_choice);
@@ -194,11 +196,11 @@ void area_finder(int value, int user_choice,char c)
 
 void area_g(int value, char c, int user_choice)
 {
-    int temp=tokens[user_choice][2];
-    tokens[user_choice][2]+=value;
-    int x=tokens[user_choice][2];
+    int temp=tokens[user_choice][2]; //temp for clearing past place
+    tokens[user_choice][2]+=value; //calculating the final position
+    int x=tokens[user_choice][2]; //taking x as a replica of token[user_choice][2]
 
-    if(x>18)
+    if(x>18) //checking the value eligible for next area
     {
         *(gr_ptr+(18-temp)*3)='_';//clearing past record
 
@@ -215,17 +217,18 @@ void area_g(int value, char c, int user_choice)
         //to move to next kingdom
     }
 
-    if(x<=6) //moving pice to new location
+    //moving pice to new location
+    if(x<=6) //for lane 0
     {   
         *(gr_ptr+2+3*(x-1))=c;
     }
 
-    else if(x==7)
+    else if(x==7) //for lane 1
     {
         *(gr_ptr+1+3*5)=c;
     }
 
-    else if(tokens[user_choice][3]==1 && (x<13 || temp<13))
+    else if(tokens[user_choice][3]==1 && (x<13 || temp<13)) //for home lane
     {
         if(x==13)  //condition for reaching homecount
         {
@@ -234,19 +237,19 @@ void area_g(int value, char c, int user_choice)
             tokens[user_choice][2]=0;
         }
 
-        else if(x>13) //if value is larger then dumping the increament
+        else if(x>13) //if value is larger then ignoring the increament
         {
             x=temp;
             value=0;
         }
 
-        else
+        else //for moving in home lane
         {
         *(gr_ptr+(12-x)*3+1)=c;
         }
     }
 
-    else
+    else //for lane 2
     {
         if(x>7 && x<13)
         {
@@ -264,10 +267,11 @@ void area_g(int value, char c, int user_choice)
 
     end:
     //clearing previous location
+    //for finding temp coordinate, we have used the same approcah as done to find x
 
     if(value!=0)
     {
-    if(temp<=6) //for values 0 to 6
+    if(temp<=6) //for lane 1
     {   
         *(gr_ptr+2+3*(temp-1))='_';
     }
@@ -316,7 +320,7 @@ void area_r(int value, char c, int user_choice)
     }
 
     //moving pice to new location
-    if(x<=6)  //if it is in the same kingdom
+    if(x<=6) 
     {   
         *(re_ptr+18-x)=c;
     }
@@ -595,45 +599,45 @@ int dice(void)
     unsigned short int r;
 
     r = rand();
-    //f = r / 65536.0;
-    r = 1 + (r % 6);
+    //As modules of 6 results in (0,1,2,3,4,5,6). So it gives almost equal distribution of probability
+    r = 1 + (r % 6); //increasing by 1 to get (1,2,3,4,5,6)
     
     return (r);
 }
 
 void display()
 {
-    for(i=0;i<6;i++) //blue
+    for(i=0;i<6;i++) //blue area 
     {
-        for(j=0;j<12 && i!=2 && i!=4;j++)
+        for(j=0;j<12 && i!=2 && i!=4;j++)//spaces
         {
             printf(" ");
         }
 
-        if(i==2)
+        if(i==2) //homelock of red
         {
             printf("  %c   %c     ", *(homelock_ptr+4),*(homelock_ptr+4+1));
         }
-        else if(i==4)
+        else if(i==4) //homelock of red
         {
             printf("  %c   %c     ", *(homelock_ptr+4+2),*(homelock_ptr+4+3));
         }
 
-        for(j=0;j<3;j++)
+        for(j=0;j<3;j++) //displaying blue area
         {
             printf("%c ", *(bl_ptr+j+i*3));
         }
 
         for(j=0;j<12 && i!=2 && i!=4;j++)
         {
-            printf(" ");
+            printf(" "); //spaces
         }
 
-        if(i==2)
+        if(i==2) //homlock of blue
         {
             printf("  %c   %c     ", *(homelock_ptr+8),*(homelock_ptr+8+1));
         }
-        else if(i==4)
+        else if(i==4) //homlock of blue
         {
             printf("  %c   %c     ", *(homelock_ptr+8+2),*(homelock_ptr+8+3));
         }
@@ -641,30 +645,30 @@ void display()
         printf("\n");
     }
 
-    for(i=0;i<3;i++) //red and blue
+    for(i=0;i<3;i++) //red and blue area
     {
 
-        for(j=0;j<6;j++)
+        for(j=0;j<6;j++) //red area
         {
             printf("%c ", *(re_ptr+j+i*6));
         }
 
-        if(i==0)
+        if(i==0) //homecount (won token) count of blue
         {
             printf("  %d   ", homecount[2]);
         }
         
-        else if(i==1)
+        else if(i==1) //homecount (won token) count of red and yellow
         {
             printf("%d   %d ", homecount[1], homecount[3]);
         }
 
-        else
+        else //homecount (won token) count of green
         {
             printf("  %d   ", homecount[0]);
         }
 
-        for(j=0;j<6;j++)
+        for(j=0;j<6;j++) //yellow area
         {
             printf("%c ", *(ye_ptr+j+i*6));
         }
@@ -673,35 +677,35 @@ void display()
 
     for(i=0;i<6;i++) //green
     {
-        for(j=0;j<12 && i!=2 && i!=4;j++)
+        for(j=0;j<12 && i!=2 && i!=4;j++) //spaces
         {
             printf(" ");
         }
 
-        if(i==2)
+        if(i==2) //green homelock area
         {
             printf("  %c   %c     ", *(homelock_ptr),*(homelock_ptr+1)); //green home
         }
-        else if(i==4)
+        else if(i==4) //green homelock area
         {
             printf("  %c   %c     ", *(homelock_ptr+2),*(homelock_ptr+3));
         }
 
-        for(j=0;j<3;j++)
+        for(j=0;j<3;j++) //green area
         {
             printf("%c ", *(gr_ptr+j+i*3));
         }
 
         for(j=0;j<12 && i!=2 && i!=4;j++)
         {
-            printf(" ");
+            printf(" "); //spaces
         }
 
-        if(i==2)
+        if(i==2) //yellow homelock area
         {
             printf("  %c   %c     ", *(homelock_ptr+12),*(homelock_ptr+12+1));
         }
-        else if(i==4)
+        else if(i==4) //yellow homelock area
         {
             printf("  %c   %c     ", *(homelock_ptr+12+2),*(homelock_ptr+12+3));
         }
