@@ -76,7 +76,7 @@ int main(void)
     display();
 }
 
-void player()
+void player() //game console
 {
     char dummy; //for handling enter of scanf
     int user_choice=1; //default choice of user
@@ -123,8 +123,8 @@ then decreasing the choice.*/
 
         else if(value==6 && choices[0]!=5) //bringing the token out of homelock
         {
-            tokens[user_choice-1][1]=1;
-            tokens[user_choice-1][2]=14;
+            tokens[user_choice-1][1]=1; //assigning the area to new token
+            tokens[user_choice-1][2]=14; //assigning the location to new token
             homelock_manipulator(tokens[user_choice-1][3]-1);
             value=0;
         }
@@ -147,7 +147,7 @@ then decreasing the choice.*/
 //based upon no of tokens out of hoemlock, changing the array of homelock
 void homelock_manipulator(int colourcode)
 {
-    switch (4-homecount[0]-choices[0])
+    switch (4-homecount[colourcode-1]-choices[colourcode-1])
     {
     case 0:
         *(homelock_ptr+4*colourcode)='_';
@@ -599,7 +599,7 @@ int dice(void)
     unsigned short int r;
 
     r = rand();
-    //As modules of 6 results in (0,1,2,3,4,5,6). So it gives almost equal distribution of probability
+    //As modules of 6 results in (0,1,2,3,4,5). So it gives almost equal probability distribution of probability
     r = 1 + (r % 6); //increasing by 1 to get (1,2,3,4,5,6)
     
     return (r);
