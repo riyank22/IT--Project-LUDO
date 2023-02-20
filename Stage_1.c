@@ -45,15 +45,18 @@ int main(void)
     
     int value=0;
 
-    *(ptr_tokens)=2;
-    *(ptr_tokens+1)=14;
-    *(ptr_tokens+2)=2;
+    printf("Enter colour code (1,2,3,4): ");
+    scanf("%d", (ptr_tokens+2));
+
+    printf("Enter spawn area and location: ");
+    scanf("%d %d", (ptr_tokens), (ptr_tokens+1));
+
 
     printf("%d %d", tokens[0][0], tokens[0][1]);
 
    char null='\0';
 
-    while(*(ptr_homecount)!=1)
+    while(*(ptr_homecount+*(ptr_tokens)-1)!=1)
     {
         area_finder(value, ptr_tokens);
         display();
