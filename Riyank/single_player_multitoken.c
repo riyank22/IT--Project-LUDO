@@ -49,7 +49,7 @@ int main(void)
         tokens[i][3]=1;
     }
 
-    for(i=0;i<4;i++) //feeding colourcode
+    for(i=0;i<4;i++) //feeding coloursymbol
     {
         tokens[i][4]=(int)'*';
     }
@@ -72,7 +72,6 @@ int main(void)
     //4-yellow
 
     system("clear");
-    printf("welcome\n");
 
     while(homecount[tokens[0][3]-1]!=4) //terminating condition
     {
@@ -92,19 +91,16 @@ void player()
         goto end;
     }
 
-    //value=dice();
-    printf("\nEnter value: ");
-    scanf("%d", &value);
-    //dummy=getchar();
+    value=dice();
+
+    printf("\n\nLUDO GAME (TERMINAL BASED)\n\n");
 
     display();
 
-    if(value==6 && choices[0]+homecount[0]<4)
+    if(value==6 && choices[0]+homecount[0]<5)
     {
         choices[0]++;
     }
-
-    printf("%d", choices[0]);
 
     for(int i=0;i<4;i++)
     {
@@ -115,7 +111,7 @@ void player()
 
     if(choices[0]>0)
     {
-        if(choices[0]>1)
+        if(choices[0]>1||homecount[0]>1)
         {
             printf("Enter the choice: ");
             scanf("%d", &user_choice);
@@ -126,19 +122,24 @@ void player()
             choices[0]--;
         }
 
-    else if(value==6)
-    {
-        tokens[user_choice-1][1]=1;
-        tokens[user_choice-1][2]=14;
-        homelock_manipulator(tokens[user_choice-1][3]-1);
-        value=0;
-    }
+        else if(value==6 && choices[0]!=5)
+        {
+            tokens[user_choice-1][1]=1;
+            tokens[user_choice-1][2]=14;
+            homelock_manipulator(tokens[user_choice-1][3]-1);
+            value=0;
+        }
 
-        area_finder(value, 5*(user_choice-1), tokens[user_choice-1][4]); //value, sequence, colour symbol
+        area_finder(value, (user_choice-1), tokens[user_choice-1][4]); //value, sequence, colour symbol
     }   
-        printf("PRESS ENTER TO CONTINUE.\n");
+
+        if(choices[0]==1)
+        {
+        printf("PRESS ENTER TO CONTINUE.");
         dummy=getchar();
-        //system("clear");
+        }
+        
+        system("clear");
 
     end:
 }
@@ -199,7 +200,6 @@ void area_g(int value, char c, int user_choice)
 
     if(x>18)
     {
-        printf("x=%d\n", x);
         *(gr_ptr+(18-temp)*3)='_';//clearing past record
 
         value=x-18; //finding the coordinates to move in next kingdom
@@ -236,7 +236,7 @@ void area_g(int value, char c, int user_choice)
 
         else if(x>13) //if value is larger then dumping the increament
         {
-            tokens[user_choice][2]=temp;
+            x=temp;
             value=0;
         }
 
@@ -262,9 +262,11 @@ void area_g(int value, char c, int user_choice)
 
     tokens[user_choice][2]=x;
 
+    end:
+    //clearing previous location
+
     if(value!=0)
     {
-    //clearing previous location
     if(temp<=6) //for values 0 to 6
     {   
         *(gr_ptr+2+3*(temp-1))='_';
@@ -290,8 +292,6 @@ void area_g(int value, char c, int user_choice)
         *(gr_ptr+(18-temp)*3)='_';
     }
     }
-
-    end:
 }
 
 void area_r(int value, char c, int user_choice)
@@ -302,7 +302,6 @@ void area_r(int value, char c, int user_choice)
 
     if(x>18)
     {
-        printf("x=%d\n", x);
         *(re_ptr+(temp-13))='_';//clearing past record
 
         value=x-18;
@@ -319,13 +318,11 @@ void area_r(int value, char c, int user_choice)
     //moving pice to new location
     if(x<=6)  //if it is in the same kingdom
     {   
-        printf("x<6 = %d\n", x);
         *(re_ptr+18-x)=c;
     }
 
     else if(x==7)
     {
-        printf("x==7 %d\n", x);
         *(re_ptr+6)=c;
     }
 
@@ -333,36 +330,30 @@ void area_r(int value, char c, int user_choice)
     {
         if(x==13)  //condition for reaching homecount
         {
-            printf("x=%d\n", x);
             homecount[1]++;; //increasing count by 1
         }
 
         else if(tokens[user_choice][2]>13) //if value is larger then dumping the increament
         {
-            printf("x=%d\n", x);
             x=temp;
             value=0;
         }
 
         else
         {
-            printf("x=%d\n", x);
-        *(re_ptr+x-1)=c;
+            *(re_ptr+x-1)=c;
         }
     }
 
     else
     {
-        printf("x=%d\n", x);
         if(x>7 && x<13)
         {
-            printf("x= succ %d\n", x);
             x+=5;
         }
 
         else if(x==13 && temp==7)
         {
-            printf("x=%d\n", x);
             x=18;
         }
 
@@ -372,6 +363,8 @@ void area_r(int value, char c, int user_choice)
     tokens[user_choice][2]=x;
 
     //clearing previous location
+
+    end:
 
     if(value!=0)
     {
@@ -399,8 +392,6 @@ void area_r(int value, char c, int user_choice)
         *(re_ptr+temp-13)='_';
     }
     }
-
-    end:
 }
 
 void area_b(int value, char c, int user_choice)
@@ -441,7 +432,7 @@ void area_b(int value, char c, int user_choice)
 
         else if(x>13) //if value is larger then dumping the increament
         {
-            tokens[user_choice][2]=temp;
+            x=temp;
             value=0;
         }
 
@@ -467,6 +458,8 @@ void area_b(int value, char c, int user_choice)
     }
 
     tokens[user_choice][2]=x;
+
+    end: //for moving to next kingdom
 
     //clearing previous location    
 
@@ -497,8 +490,6 @@ void area_b(int value, char c, int user_choice)
         *(bl_ptr+3*temp-37)='_';
     }
     }
-
-    end:
 }
 
 void area_y(int value, char c, int user_choice)
@@ -539,7 +530,7 @@ void area_y(int value, char c, int user_choice)
 
         else if(x>13) //if value is larger then dumping the increament
         {
-            tokens[user_choice][2]=temp;
+            x=temp;
             value=0;
         }
 
@@ -565,6 +556,9 @@ void area_y(int value, char c, int user_choice)
     }
 
     tokens[user_choice][2]=x;
+
+    end:
+
     //clearing previous location    
 
     if(value!=0)
@@ -593,8 +587,6 @@ void area_y(int value, char c, int user_choice)
             *(ye_ptr+30-temp)='_';
         }
     }
-
-    end:
 }
 
 int dice(void)
