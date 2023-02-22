@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 int i,j;
 void display(int ); //for displaying (giving input the four char arrays)
@@ -91,6 +92,8 @@ int main(void)
 
 void player(int colourcode) //game console
 {
+    bool flag=1;
+
     printf("Player %d's turn\n", colourcode);
     colourcode--;
     char dummy; //for handling enter of scanf
@@ -132,6 +135,7 @@ void player(int colourcode) //game console
             begin:
             printf("Enter the choice: ");
             scanf("%d", &user_choice);
+            flag=0;
 
             if(user_choice<=homecount[colourcode])
             {
@@ -168,9 +172,9 @@ then decreasing the choice.*/
         area_finder(value, unique_id, tokens[unique_id][4]); //value, sequence, colour symbol
     }   
 
-        if(choices[colourcode]<2) //for only one choice
+        if(choices[colourcode]<2 && flag) //for only one choice
         {
-        printf("PRESS ENTER TO CONTINUE.");
+        printf("\nPRESS ENTER TO CONTINUE.");
         dummy=getchar();
         }
 

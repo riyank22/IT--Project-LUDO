@@ -3,3 +3,6 @@ logic
 .vscode/settings.json
 .vscode/tasks.json
 Riyank/.vscode/tasks.json
+Riyank/Ludo_Multiplayer_stable.out
+.gitignore
+Riyank/Ludo_Multiplayer_debug.out
