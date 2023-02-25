@@ -5,7 +5,7 @@
 #include <stdbool.h>
 
 int i,j;
-void display(int ); //for displaying (giving input the four char arrays)
+void display(int); //for displaying (giving input the four char arrays)
 
 void area_finder(int, int,char); //value, initial kingdomn(kingdom number and postion)
 
@@ -65,14 +65,8 @@ int main(void)
                             {"????"}
                          };
     homelock_ptr=&homelock[0][0]; //mapping pointer
-    
-    //colour code
-    //1-green
-    //2-red
-    //3-blue
-    //4-yellow
 
-    system("clear"); //for windows users replease clear to cls
+    system("cls"); //for windows users replease clear to cls
 
     int k=0;
 
@@ -82,27 +76,23 @@ int main(void)
         player(k%4+1);
         k++;
     }
-    /*while(homecount[tokens[0][3]-1]!=4) //terminating condition i.e when all tokens come to the home
-    {
-        player();
-    }*/
-    system("clear");
+    system("cls");
     display(0);
 }
 
-void player(int colourcode) //game console
+void player(int colourcode) //game event handler
 {
     bool flag=1;
 
     printf("Player %d's turn\n", colourcode);
     colourcode--;
-    char dummy; //for handling enter of scanf
+    char dummy; //for handling enter of getchar
     int user_choice=1; //default choice of user
     int value; //dice value
 
     int unique_id=4*(colourcode) + (user_choice-1); //storing unique value
 
-    if (homecount[colourcode]==4) //for multiplayer
+    if (homecount[colourcode]>=4) //if the player has won
     {
         goto end;
     }
@@ -121,10 +111,10 @@ void player(int colourcode) //game console
         choices[colourcode]++; //max choices =4
     }
 
-    for(int i=0;i<16;i++)
+    /*for(int i=0;i<16;i++)
     {
         printf("\nThe Coords for %d are %d %d", tokens[i][0], tokens[i][1], tokens[i][2]); //for debuging process
-    }
+    }*/ //for debugging
 
     printf("\nThe Dice Value is %d\n", value);
 
@@ -178,9 +168,9 @@ then decreasing the choice.*/
         dummy=getchar();
         }
 
-        system("clear");
+         end: //if the player had won //multiplayer
 
-    end: //if the player had won //multiplayer
+        system("cls");
 }
 
 //based upon no of tokens out of hoemlock, changing the array of homelock
@@ -230,7 +220,6 @@ void area_finder(int value, int user_choice,char c)
         area_y(value,c,user_choice);
         break;
     }
-
 }
 
 void area_g(int value, char c, int user_choice)
